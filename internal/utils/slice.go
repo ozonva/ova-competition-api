@@ -16,17 +16,15 @@ func IntSliceToBatches(slice []int, chunkSize int) ([][]int, error) {
 	}
 
 	batches := make([][]int, 0)
-	batch := make([]int, 0, chunkSize)
-	for _, item := range slice {
-		batch = append(batch, item)
-		if len(batch) == chunkSize {
-			batches = append(batches, batch)
-			batch = make([]int, 0, chunkSize)
+	for i := 0; i <= len(slice); i += chunkSize {
+		sliceEnd := i + chunkSize
+		if sliceEnd > len(slice) {
+			sliceEnd = len(slice)
 		}
-	}
 
-	if len(batch) > 0 {
-		batches = append(batches, batch)
+		if sliceEnd-i > 0 {
+			batches = append(batches, slice[i:sliceEnd])
+		}
 	}
 
 	return batches, nil

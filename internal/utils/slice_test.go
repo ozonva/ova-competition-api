@@ -37,6 +37,9 @@ func TestIntSliceToBatches(t *testing.T) {
 		{
 			[]int{1, 2, 3, 4, 5, 6, 7, 8}, 1, [][]int{{1}, {2}, {3}, {4}, {5}, {6}, {7}, {8}}, false,
 		},
+		{
+			[]int{1, 2, 3}, 10, [][]int{{1, 2, 3}}, false,
+		},
 	}
 
 	for _, testCase := range testCases {
