@@ -23,7 +23,8 @@ func TestIntSliceToBatches(t *testing.T) {
 		{
 			nil, 10, nil, true,
 		},
-		{[]int{1, 2, 3, 4, 5, 6, 7, 8}, 0, nil, true},
+		{
+			[]int{1, 2, 3, 4, 5, 6, 7, 8}, 0, nil, true},
 		{
 			[]int{1, 2, 3, 4, 5, 6, 7, 8}, 7, [][]int{{1, 2, 3, 4, 5, 6, 7}, {8}}, false,
 		},
