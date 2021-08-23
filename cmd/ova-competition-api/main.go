@@ -1,7 +1,9 @@
 package main
 
-import "fmt"
+import (
+	"ozonva/ova-competition-api/internal/utils"
+)
 
 func main() {
-	fmt.Println("Hello, ova-competition-api")
+	utils.WriteSomeEntries(10, "testfile.txt")
 }

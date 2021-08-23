@@ -2,7 +2,9 @@ package utils
 
 import (
 	"github.com/google/go-cmp/cmp"
+	"ozonva/ova-competition-api/internal/models"
 	"testing"
+	"time"
 )
 
 type ToBatchCase struct {
@@ -81,5 +83,33 @@ func TestFilterWords(t *testing.T) {
 		if !cmp.Equal(filtered, testCase.expected) {
 			t.Fatal("slices do not match", filtered, testCase.expected)
 		}
+	}
+}
+
+func TestCompetitionsToMap(t *testing.T) {
+	competitions := []models.Competition{
+		models.NewCompetition(1, "Name 1", time.Now()),
+		models.NewCompetition(2, "Name 2", time.Now()),
+	}
+
+	mapped, err := CompetitionsToMap(competitions)
+	if err != nil {
+		t.Fatal("received error when mapping competitions to map", err)
+	} else {
+		if len(mapped) != len(competitions) {
+			t.Fatalf("expected %d elements in map, found: %d", len(competitions), len(mapped))
+		} else {
+			for _, competition := range competitions {
+				if !cmp.Equal(competition, mapped[competition.Id]) {
+					t.Fatalf("competition %d has different content in map or is absent", competition.Id)
+				}
+			}
+		}
+	}
+
+	competitions = append(competitions, models.NewCompetition(1, "Duplicate", time.Now()))
+	_, err1 := CompetitionsToMap(competitions)
+	if err1 == nil {
+		t.Fatal("no duplicate competitions found, but it should")
 	}
 }
