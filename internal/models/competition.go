@@ -70,7 +70,7 @@ func (c *Competition) ChangeStatus(newStatus CompetitionStatus) error {
 
 func (c *Competition) String() string {
 	return fmt.Sprintf("Competition (Id: %d, Name: \"%s\", Start time: %v, Status: %d, participants: %v)",
-		c.Id, c.Name, c.StartTime, c.Status, c.participants)
+		c.Id, c.Name, c.StartTime, c.Status(), c.participants)
 }
 
 func (c *Competition) findParticipant(participantId uint64) int {

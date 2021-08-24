@@ -100,7 +100,7 @@ func TestCompetitionsToMap(t *testing.T) {
 			t.Fatalf("expected %d elements in map, found: %d", len(competitions), len(mapped))
 		} else {
 			for _, competition := range competitions {
-				if !cmp.Equal(competition, mapped[competition.Id]) {
+				if !cmp.Equal(competition.Id, mapped[competition.Id].Id) {
 					t.Fatalf("competition %d has different content in map or is absent", competition.Id)
 				}
 			}
