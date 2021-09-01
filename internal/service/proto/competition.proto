@@ -1,0 +1,58 @@
+syntax = "proto3";
+
+package ova.competition.api;
+
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/empty.proto";
+
+option go_package = "github.com/ozonva/ova-competition-api/pkg/ova-competition-api";
+
+service CompetitionService {
+  rpc CreateCompetition(CreateCompetitionRequest) returns (CompetitionResponse);
+  rpc DescribeCompetition(DescribeCompetitionRequest) returns (CompetitionResponse);
+  rpc ListCompetitions(ListCompetitionsRequest) returns (ListCompetitionsResponse);
+  rpc RemoveCompetition(RemoveCompetitionRequest) returns (google.protobuf.Empty);
+}
+
+message CreateCompetitionRequest {
+  uint64 id = 1;
+  string name = 2;
+  google.protobuf.Timestamp create_date = 3;
+  repeated ParticipantResponse participants = 4;
+}
+
+message DescribeCompetitionRequest {
+  uint64 id = 1;
+}
+
+message ListCompetitionsRequest {
+  uint32 limit = 1;
+  uint32 offset = 2;
+}
+
+message ListCompetitionsResponse {
+  repeated CompetitionResponse competitions = 1;
+}
+
+message RemoveCompetitionRequest {
+  uint64 competition_id = 1;
+}
+
+message CompetitionResponse {
+  uint64 id = 1;
+  string name = 2;
+  google.protobuf.Timestamp create_date = 3;
+  CompetitionStatus status = 4;
+}
+
+enum CompetitionStatus {
+  Planned = 0;
+  Pending = 1;
+  Finished = 2;
+}
+
+message ParticipantResponse {
+  uint64 id = 1;
+  string fullName = 2;
+  uint32 age = 3;
+}
