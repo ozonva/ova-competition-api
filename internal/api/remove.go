@@ -7,7 +7,12 @@ import (
 	desc "ozonva/ova-competition-api/pkg/competition/api"
 )
 
-func (s *Server) RemoveCompetition(ctx context.Context, req *desc.RemoveCompetitionRequest) (*emptypb.Empty, error) {
+func (s *Server) RemoveCompetition(_ context.Context, req *desc.RemoveCompetitionRequest) (*emptypb.Empty, error) {
 	log.Infof("Removing competition: %v", req)
+	err := (*s.competitionRepo).RemoveEntity(req.CompetitionId)
+	if err != nil {
+		return nil, err
+	}
+
 	return &emptypb.Empty{}, nil
 }
