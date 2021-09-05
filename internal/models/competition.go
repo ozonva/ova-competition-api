@@ -15,11 +15,11 @@ const (
 )
 
 type Competition struct {
-	Id   uint64
-	Name string
+	Id   uint64 `db:"id"`
+	Name string `db:"name"`
 
-	StartTime    time.Time
-	status       CompetitionStatus
+	StartTime    time.Time         `db:"start_time"`
+	status       CompetitionStatus `db:"status"`
 	participants []Participant
 }
 
