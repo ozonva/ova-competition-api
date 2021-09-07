@@ -23,6 +23,8 @@ type CompetitionServiceClient interface {
 	DescribeCompetition(ctx context.Context, in *DescribeCompetitionRequest, opts ...grpc.CallOption) (*CompetitionResponse, error)
 	ListCompetitions(ctx context.Context, in *ListCompetitionsRequest, opts ...grpc.CallOption) (*ListCompetitionsResponse, error)
 	RemoveCompetition(ctx context.Context, in *RemoveCompetitionRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	UpdateCompetition(ctx context.Context, in *UpdateCompetitionRequest, opts ...grpc.CallOption) (*CompetitionResponse, error)
+	MultiCreateCompetitions(ctx context.Context, in *MultiCreateCompetitionsRequest, opts ...grpc.CallOption) (*MultiCreateCompetitionsResponse, error)
 }
 
 type competitionServiceClient struct {
@@ -69,6 +71,24 @@ func (c *competitionServiceClient) RemoveCompetition(ctx context.Context, in *Re
 	return out, nil
 }
 
+func (c *competitionServiceClient) UpdateCompetition(ctx context.Context, in *UpdateCompetitionRequest, opts ...grpc.CallOption) (*CompetitionResponse, error) {
+	out := new(CompetitionResponse)
+	err := c.cc.Invoke(ctx, "/ova.competition.api.CompetitionService/UpdateCompetition", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *competitionServiceClient) MultiCreateCompetitions(ctx context.Context, in *MultiCreateCompetitionsRequest, opts ...grpc.CallOption) (*MultiCreateCompetitionsResponse, error) {
+	out := new(MultiCreateCompetitionsResponse)
+	err := c.cc.Invoke(ctx, "/ova.competition.api.CompetitionService/MultiCreateCompetitions", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // CompetitionServiceServer is the server API for CompetitionService service.
 // All implementations must embed UnimplementedCompetitionServiceServer
 // for forward compatibility
@@ -77,6 +97,8 @@ type CompetitionServiceServer interface {
 	DescribeCompetition(context.Context, *DescribeCompetitionRequest) (*CompetitionResponse, error)
 	ListCompetitions(context.Context, *ListCompetitionsRequest) (*ListCompetitionsResponse, error)
 	RemoveCompetition(context.Context, *RemoveCompetitionRequest) (*emptypb.Empty, error)
+	UpdateCompetition(context.Context, *UpdateCompetitionRequest) (*CompetitionResponse, error)
+	MultiCreateCompetitions(context.Context, *MultiCreateCompetitionsRequest) (*MultiCreateCompetitionsResponse, error)
 	mustEmbedUnimplementedCompetitionServiceServer()
 }
 
@@ -95,6 +117,12 @@ func (UnimplementedCompetitionServiceServer) ListCompetitions(context.Context, *
 }
 func (UnimplementedCompetitionServiceServer) RemoveCompetition(context.Context, *RemoveCompetitionRequest) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RemoveCompetition not implemented")
+}
+func (UnimplementedCompetitionServiceServer) UpdateCompetition(context.Context, *UpdateCompetitionRequest) (*CompetitionResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateCompetition not implemented")
+}
+func (UnimplementedCompetitionServiceServer) MultiCreateCompetitions(context.Context, *MultiCreateCompetitionsRequest) (*MultiCreateCompetitionsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method MultiCreateCompetitions not implemented")
 }
 func (UnimplementedCompetitionServiceServer) mustEmbedUnimplementedCompetitionServiceServer() {}
 
@@ -181,6 +209,42 @@ func _CompetitionService_RemoveCompetition_Handler(srv interface{}, ctx context.
 	return interceptor(ctx, in, info, handler)
 }
 
+func _CompetitionService_UpdateCompetition_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateCompetitionRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CompetitionServiceServer).UpdateCompetition(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/ova.competition.api.CompetitionService/UpdateCompetition",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CompetitionServiceServer).UpdateCompetition(ctx, req.(*UpdateCompetitionRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _CompetitionService_MultiCreateCompetitions_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MultiCreateCompetitionsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CompetitionServiceServer).MultiCreateCompetitions(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/ova.competition.api.CompetitionService/MultiCreateCompetitions",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CompetitionServiceServer).MultiCreateCompetitions(ctx, req.(*MultiCreateCompetitionsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // CompetitionService_ServiceDesc is the grpc.ServiceDesc for CompetitionService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -203,6 +267,14 @@ var CompetitionService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "RemoveCompetition",
 			Handler:    _CompetitionService_RemoveCompetition_Handler,
+		},
+		{
+			MethodName: "UpdateCompetition",
+			Handler:    _CompetitionService_UpdateCompetition_Handler,
+		},
+		{
+			MethodName: "MultiCreateCompetitions",
+			Handler:    _CompetitionService_MultiCreateCompetitions_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

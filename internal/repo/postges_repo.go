@@ -1,6 +1,7 @@
 package repo
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"github.com/Masterminds/squirrel"
@@ -29,7 +30,7 @@ func NewRepo(db *sqlx.DB) Repo {
 	return &repo{db: db}
 }
 
-func (r *repo) AddEntities(entities []models.Competition) error {
+func (r *repo) AddEntities(ctx context.Context, entities []models.Competition) error {
 	queryBuilder := squirrel.
 		Insert("competitions").
 		Columns("id", "name", "start_time", "status")
@@ -41,7 +42,7 @@ func (r *repo) AddEntities(entities []models.Competition) error {
 		return err
 	}
 
-	_, execErr := r.db.Exec(query, args...)
+	_, execErr := r.db.ExecContext(ctx, query, args...)
 	if execErr != nil {
 		return execErr
 	}
@@ -49,7 +50,7 @@ func (r *repo) AddEntities(entities []models.Competition) error {
 	return nil
 }
 
-func (r *repo) ListEntities(limit, offset uint64) ([]models.Competition, error) {
+func (r *repo) ListEntities(ctx context.Context, limit, offset uint64) ([]models.Competition, error) {
 	result := make([]models.Competition, 0, limit)
 	sql, args, err := squirrel.
 		Select("id", "name", "start_time", "status").
@@ -62,7 +63,7 @@ func (r *repo) ListEntities(limit, offset uint64) ([]models.Competition, error) 
 		return nil, err
 	}
 
-	err = r.db.Select(&result, sql, args...)
+	err = r.db.SelectContext(ctx, &result, sql, args...)
 	if err != nil {
 		return nil, err
 	}
@@ -70,7 +71,7 @@ func (r *repo) ListEntities(limit, offset uint64) ([]models.Competition, error) 
 	return result, nil
 }
 
-func (r *repo) DescribeEntity(entityId uint64) (*models.Competition, error) {
+func (r *repo) DescribeEntity(ctx context.Context, entityId uint64) (*models.Competition, error) {
 	var result *models.Competition
 	query, args, err := squirrel.
 		Select("id", "name", "start_time", "status").
@@ -81,11 +82,11 @@ func (r *repo) DescribeEntity(entityId uint64) (*models.Competition, error) {
 		return nil, err
 	}
 
-	err = r.db.Get(&result, query, args)
+	err = r.db.GetContext(ctx, &result, query, args)
 	return result, err
 }
 
-func (r *repo) RemoveEntity(entityId uint64) error {
+func (r *repo) RemoveEntity(ctx context.Context, entityId uint64) error {
 	sql, args, err := squirrel.
 		Delete("competitions").
 		Where(squirrel.Eq{"id": entityId}).
@@ -94,7 +95,27 @@ func (r *repo) RemoveEntity(entityId uint64) error {
 		return err
 	}
 
-	_, execErr := r.db.Exec(sql, args...)
+	_, execErr := r.db.ExecContext(ctx, sql, args...)
+	if execErr != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (r *repo) UpdateEntity(ctx context.Context, entityId uint64, competition *models.Competition) error {
+	sql, args, err := squirrel.
+		Update("competitions").
+		Set("name", competition.Name).
+		Set("start_time", competition.StartTime).
+		Set("status", competition.Status()).
+		Where(squirrel.Eq{"id": entityId}).
+		ToSql()
+	if err != nil {
+		return err
+	}
+
+	_, execErr := r.db.ExecContext(ctx, sql, args...)
 	if execErr != nil {
 		return err
 	}
