@@ -1,6 +1,7 @@
 package flusher
 
 import (
+	"context"
 	"ozonva/ova-competition-api/internal/models"
 	"ozonva/ova-competition-api/internal/repo"
 	"ozonva/ova-competition-api/internal/utils"
@@ -35,7 +36,7 @@ func (f *flusher) Flush(competitions []models.Competition) []models.Competition 
 
 	failedToFlush := make([]models.Competition, 0, len(competitions))
 	for _, batch := range batches {
-		err := f.competitionRepo.AddEntities(batch)
+		err := f.competitionRepo.AddEntities(context.TODO(), batch)
 		if err != nil {
 			failedToFlush = append(failedToFlush, batch...)
 		}

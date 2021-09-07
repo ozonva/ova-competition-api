@@ -3,15 +3,19 @@ package api
 import (
 	"context"
 	log "github.com/sirupsen/logrus"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/timestamppb"
 	desc "ozonva/ova-competition-api/pkg/competition/api"
 )
 
-func (s *Server) DescribeCompetition(_ context.Context, req *desc.DescribeCompetitionRequest) (*desc.CompetitionResponse, error) {
+func (s *Server) DescribeCompetition(ctx context.Context, req *desc.DescribeCompetitionRequest) (*desc.CompetitionResponse, error) {
 	log.Infof("Describing competition: %v", req)
-	competition, err := (*s.competitionRepo).DescribeEntity(req.Id)
+	defer (*s.metrics).DescribeCompetition()
+
+	competition, err := (*s.competitionRepo).DescribeEntity(ctx, req.Id)
 	if err != nil {
-		return nil, err
+		return nil, status.Errorf(codes.Internal, err.Error())
 	}
 
 	return &desc.CompetitionResponse{

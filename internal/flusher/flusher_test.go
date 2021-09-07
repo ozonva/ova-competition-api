@@ -1,6 +1,7 @@
 package flusher
 
 import (
+	"context"
 	"errors"
 	"github.com/golang/mock/gomock"
 	. "github.com/onsi/ginkgo"
@@ -22,6 +23,7 @@ var _ = Describe("Flusher", func() {
 			models.NewCompetition(3, "n3", time.Now()),
 			models.NewCompetition(4, "n4", time.Now()),
 		}
+		ctx = context.TODO()
 	)
 
 	BeforeEach(func() {
@@ -38,7 +40,7 @@ var _ = Describe("Flusher", func() {
 		When("can flush all competitions", func() {
 			Context("competitions count less than batch size", func() {
 				BeforeEach(func() {
-					mockRepo.EXPECT().AddEntities(competitions[:batchSize-1]).Return(nil).Times(1)
+					mockRepo.EXPECT().AddEntities(ctx, competitions[:batchSize-1]).Return(nil).Times(1)
 				})
 				It("all competitions should be flushed", func() {
 					Expect(f.Flush(competitions[:batchSize-1])).To(BeNil())
@@ -47,8 +49,8 @@ var _ = Describe("Flusher", func() {
 			Context("competitions count more than batch size", func() {
 				BeforeEach(func() {
 					gomock.InOrder(
-						mockRepo.EXPECT().AddEntities(competitions[:batchSize]).Return(nil).Times(1),
-						mockRepo.EXPECT().AddEntities(competitions[batchSize:]).Return(nil).Times(1),
+						mockRepo.EXPECT().AddEntities(ctx, competitions[:batchSize]).Return(nil).Times(1),
+						mockRepo.EXPECT().AddEntities(ctx, competitions[batchSize:]).Return(nil).Times(1),
 					)
 				})
 				It("there are no unflushed competitions", func() {
@@ -61,8 +63,8 @@ var _ = Describe("Flusher", func() {
 			Context("some of the competitions", func() {
 				BeforeEach(func() {
 					gomock.InOrder(
-						mockRepo.EXPECT().AddEntities(competitions[:batchSize]).Return(err).Times(1),
-						mockRepo.EXPECT().AddEntities(competitions[batchSize:]).Return(nil).Times(1),
+						mockRepo.EXPECT().AddEntities(ctx, competitions[:batchSize]).Return(err).Times(1),
+						mockRepo.EXPECT().AddEntities(ctx, competitions[batchSize:]).Return(nil).Times(1),
 					)
 				})
 				It("only first batch of competitions is unflushed", func() {
@@ -72,8 +74,8 @@ var _ = Describe("Flusher", func() {
 			Context("all competitions", func() {
 				BeforeEach(func() {
 					gomock.InOrder(
-						mockRepo.EXPECT().AddEntities(competitions[:batchSize]).Return(err).Times(1),
-						mockRepo.EXPECT().AddEntities(competitions[batchSize:]).Return(err).Times(1),
+						mockRepo.EXPECT().AddEntities(ctx, competitions[:batchSize]).Return(err).Times(1),
+						mockRepo.EXPECT().AddEntities(ctx, competitions[batchSize:]).Return(err).Times(1),
 					)
 				})
 				It("all competitions are unflushed", func() {

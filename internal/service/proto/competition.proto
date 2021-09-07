@@ -12,6 +12,8 @@ service CompetitionService {
   rpc DescribeCompetition(DescribeCompetitionRequest) returns (CompetitionResponse);
   rpc ListCompetitions(ListCompetitionsRequest) returns (ListCompetitionsResponse);
   rpc RemoveCompetition(RemoveCompetitionRequest) returns (google.protobuf.Empty);
+  rpc UpdateCompetition(UpdateCompetitionRequest) returns (CompetitionResponse);
+  rpc MultiCreateCompetitions(MultiCreateCompetitionsRequest) returns (MultiCreateCompetitionsResponse);
 }
 
 message CreateCompetitionRequest {
@@ -19,6 +21,19 @@ message CreateCompetitionRequest {
   string name = 2;
   google.protobuf.Timestamp create_date = 3;
   repeated ParticipantResponse participants = 4;
+}
+
+message MultiCreateCompetitionsRequest {
+  repeated CompetitionResponse competitions = 1;
+  int32 batch_size = 2;
+}
+
+message MultiCreateCompetitionsResponse {
+  uint64 created_competitions = 1;
+}
+
+message UpdateCompetitionRequest {
+  CompetitionResponse competition = 1;
 }
 
 message DescribeCompetitionRequest {
