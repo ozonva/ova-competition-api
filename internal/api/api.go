@@ -8,6 +8,7 @@ import (
 	"google.golang.org/grpc"
 	"io"
 	"net"
+	"os"
 	"ozonva/ova-competition-api/internal/config"
 	"ozonva/ova-competition-api/internal/kafka"
 	"ozonva/ova-competition-api/internal/metrics"
@@ -54,6 +55,19 @@ func RunGrpcServer() error {
 	tracerConfig := config.ParseTracerConfigFromViper()
 	kafkaConfig := config.ParseKafkaConfigFromViper()
 	metricsConfig := config.ParseMetricsConfigFromViper()
+
+	logFile, err := os.OpenFile("logs.txt", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
+	if err != nil {
+		return err
+	}
+	defer func(logFile *os.File) {
+		err := logFile.Close()
+		if err != nil {
+			log.Errorf("failed to close log file: %v", err)
+		}
+	}(logFile)
+
+	log.SetOutput(io.MultiWriter(logFile, os.Stdout))
 
 	competitionMetrics := metrics.NewMetrics("competitions_api", "Server")
 

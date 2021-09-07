@@ -43,7 +43,7 @@ var _ = Describe("Flusher", func() {
 					mockRepo.EXPECT().AddEntities(ctx, competitions[:batchSize-1]).Return(nil).Times(1)
 				})
 				It("all competitions should be flushed", func() {
-					Expect(f.Flush(competitions[:batchSize-1])).To(BeNil())
+					Expect(f.Flush(ctx, competitions[:batchSize-1])).To(BeNil())
 				})
 			})
 			Context("competitions count more than batch size", func() {
@@ -54,7 +54,7 @@ var _ = Describe("Flusher", func() {
 					)
 				})
 				It("there are no unflushed competitions", func() {
-					Expect(f.Flush(competitions)).To(BeNil())
+					Expect(f.Flush(ctx, competitions)).To(BeNil())
 				})
 			})
 		})
@@ -68,7 +68,7 @@ var _ = Describe("Flusher", func() {
 					)
 				})
 				It("only first batch of competitions is unflushed", func() {
-					Expect(f.Flush(competitions)).To(Equal(competitions[:batchSize]))
+					Expect(f.Flush(ctx, competitions)).To(Equal(competitions[:batchSize]))
 				})
 			})
 			Context("all competitions", func() {
@@ -79,7 +79,7 @@ var _ = Describe("Flusher", func() {
 					)
 				})
 				It("all competitions are unflushed", func() {
-					Expect(f.Flush(competitions)).To(Equal(competitions))
+					Expect(f.Flush(ctx, competitions)).To(Equal(competitions))
 				})
 			})
 		})

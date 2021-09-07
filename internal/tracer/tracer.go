@@ -11,6 +11,7 @@ import (
 	"ozonva/ova-competition-api/internal/config"
 )
 
+// InitTracer инициализирует трассировку событий
 func InitTracer(serviceName string, tracerConfig *config.TracerConfig) (io.Closer, error) {
 	cfg := jaegercfg.Configuration{
 		ServiceName: serviceName,

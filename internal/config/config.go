@@ -2,6 +2,7 @@ package config
 
 import "github.com/spf13/viper"
 
+// PostgresConfig содержит конфигурацию PostgreSQL
 type PostgresConfig struct {
 	// Адрес БД
 	DbHost string
@@ -15,17 +16,25 @@ type PostgresConfig struct {
 	DbPassword string
 }
 
+// KafkaConfig содержит конфигурацию Kafka
 type KafkaConfig struct {
+	// Хост Kafka
 	KafkaHost string
+	// Порт Kafka
 	KafkaPort int
-	Topic     string
+	// Topic, в который производится записи
+	Topic string
 }
 
+// MetricsConfig содержит конфигурацию метрик
 type MetricsConfig struct {
+	// Http путь, по которому доступны метрики
 	MetricsPath string
+	// Порт, на котором размещаются метрики
 	MetricsPort int
 }
 
+// TracerConfig содержит конфигурацию трассировок
 type TracerConfig struct {
 	// Адрес Jaeger
 	JaegerHost string
