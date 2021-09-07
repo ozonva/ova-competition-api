@@ -14,7 +14,8 @@ type flusher struct {
 
 // Flusher - интерфейс для сброса задач в хранилище
 type Flusher interface {
-	Flush(entities []models.Competition) []models.Competition
+	// Flush сбрасывает соревнования в хранилища с разбиением на батчи
+	Flush(ctx context.Context, entities []models.Competition) []models.Competition
 }
 
 // NewFlusher возвращает Flusher с поддержкой батчевого сохранения
@@ -28,7 +29,7 @@ func NewFlusher(
 	}
 }
 
-func (f *flusher) Flush(competitions []models.Competition) []models.Competition {
+func (f *flusher) Flush(ctx context.Context, competitions []models.Competition) []models.Competition {
 	batches, err := utils.CompetitionSliceToBatches(competitions, f.chunkSize)
 	if err != nil {
 		return competitions
@@ -36,7 +37,7 @@ func (f *flusher) Flush(competitions []models.Competition) []models.Competition 
 
 	failedToFlush := make([]models.Competition, 0, len(competitions))
 	for _, batch := range batches {
-		err := f.competitionRepo.AddEntities(context.TODO(), batch)
+		err := f.competitionRepo.AddEntities(ctx, batch)
 		if err != nil {
 			failedToFlush = append(failedToFlush, batch...)
 		}

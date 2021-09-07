@@ -1,6 +1,7 @@
 package saver
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"ozonva/ova-competition-api/internal/flusher"
@@ -17,10 +18,14 @@ type saver struct {
 	flusher        flusher.Flusher
 	capacity       uint
 	tickerStopChan chan struct{}
+	ctx            context.Context
 }
 
+// Saver в фоновом режиме периодически сохраняет соревнования в хранилище
 type Saver interface {
+	// Save асинхронно сохраняет соревнование
 	Save(competition models.Competition) error
+	// Close завершает работу Saver, сохраняя уже накопленные данные
 	Close() error
 }
 
@@ -29,12 +34,14 @@ func NewSaver(
 	capacity uint,
 	interval time.Duration,
 	flusher flusher.Flusher,
+	ctx context.Context,
 ) Saver {
 	s := &saver{
 		capacity: capacity,
 		interval: interval,
 		buffer:   make([]models.Competition, 0, capacity),
 		flusher:  flusher,
+		ctx:      ctx,
 	}
 	s.init()
 	return s
@@ -75,7 +82,7 @@ func (s *saver) flush() error {
 	defer s.m.Unlock()
 
 	if len(s.buffer) > 0 {
-		err := s.flusher.Flush(s.buffer)
+		err := s.flusher.Flush(s.ctx, s.buffer)
 		if err != nil {
 			return errors.New(fmt.Sprintf("failed to flush buffer: %v", err))
 		}

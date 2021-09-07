@@ -6,23 +6,34 @@ import (
 	"time"
 )
 
+// CompetitionStatus - статус соревнования
 type CompetitionStatus uint
 
 const (
+	// Planned - запланировано
 	Planned CompetitionStatus = iota
+	// Pending - ожидается
 	Pending
+	// Finished - завершено
 	Finished
 )
 
+// Competition - соревнование
 type Competition struct {
-	Id   uint64 `db:"id"`
+	// Идентификатор соревнования
+	Id uint64 `db:"id"`
+	// Название соревнования
 	Name string `db:"name"`
 
-	StartTime    time.Time         `db:"start_time"`
-	status       CompetitionStatus `db:"status"`
+	// Дата начала соревнования
+	StartTime time.Time `db:"start_time"`
+	// Статус соревнования
+	status CompetitionStatus `db:"status"`
+	// Список участников соревнования
 	participants []Participant
 }
 
+// Status возвращает текущий статус соревнования
 func (c *Competition) Status() CompetitionStatus {
 	return c.status
 }
@@ -38,6 +49,7 @@ func NewCompetition(id uint64, name string, startTime time.Time) Competition {
 	}
 }
 
+// AddParticipant добавляет участника соревнования
 func (c *Competition) AddParticipant(participant Participant) error {
 	existingParticipantIdx := c.findParticipant(participant.Id)
 	if existingParticipantIdx == -1 {
@@ -48,6 +60,7 @@ func (c *Competition) AddParticipant(participant Participant) error {
 	}
 }
 
+// RemoveParticipant удаляет участника соревнования
 func (c *Competition) RemoveParticipant(participantId uint64) error {
 	participantIdxToDelete := c.findParticipant(participantId)
 
@@ -59,6 +72,7 @@ func (c *Competition) RemoveParticipant(participantId uint64) error {
 	}
 }
 
+// ChangeStatus меняет статус соревнования
 func (c *Competition) ChangeStatus(newStatus CompetitionStatus) error {
 	if newStatus == Pending && len(c.participants) == 0 {
 		return errors.New("could not start competition without participants")

@@ -5,11 +5,15 @@ import (
 	"ozonva/ova-competition-api/internal/models"
 )
 
+// CompetitionEventType - тип события о соревновании
 type CompetitionEventType uint64
 
 const (
+	// CompetitionCreated - соревнование создано
 	CompetitionCreated CompetitionEventType = iota
+	// CompetitionUpdated - соревнование обновлено
 	CompetitionUpdated
+	// CompetitionDeleted - соревнование удалено
 	CompetitionDeleted
 )
 
